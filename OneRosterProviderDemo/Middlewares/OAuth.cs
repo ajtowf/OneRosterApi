@@ -30,9 +30,6 @@ namespace OneRosterProviderDemo.Middlewares
 
         public async Task Invoke(HttpContext context, ApiContext db)
         {
-            await _next(context);
-            return;
-
             if (!context.Request.Path.StartsWithSegments("/ims/oneroster"))
             {
                 Trace.TraceInformation($"Non-OneRoster route; bypassing oauth");
