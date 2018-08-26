@@ -1,0 +1,43 @@
+﻿
+@{
+    ViewData["Title"] = "SDS Profile";
+}
+
+<h3>Manage Profile</h3>
+@if (!string.IsNullOrWhiteSpace(ViewBag.manageProfileError))
+{
+<div class="row">
+    <div class="col-md-12">
+        <pre>@ViewBag.manageProfileError</pre>
+    </div>
+</div>
+}
+<form asp-controller="Sds" asp-action="ManageProfileAsync">
+    <div class="form-group">
+        <label for="profileId">Profile ID</label>
+        <input type="text" name="profileId" id="profileId" value="@ViewBag.profileId" class="form-control" />
+    </div>
+    <button type="submit" name="action" value="start">start</button>
+    <button type="submit" name="action" value="pause">pause</button>
+    <button type="submit" name="action" value="resume">resume</button>
+    <button type="submit" name="action" value="reset">reset</button>
+    <button type="submit" name="action" value="delete">delete</button>
+</form>
+<br />
+<br />
+
+@if (!string.IsNullOrWhiteSpace(ViewBag.profileStatus))
+{
+    <h3>Profile Status</h3>
+    <pre>
+        @ViewBag.profileStatus
+    </pre>
+    <br />
+    <br />
+}
+
+<h3>Profile</h3>
+<pre>
+    @ViewBag.profile
+</pre>
+

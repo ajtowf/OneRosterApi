@@ -1,0 +1,63 @@
+﻿@model OneRosterProviderDemo.ViewModels.CreateRestProfileModel
+@{
+    ViewData["Title"] = "Sync Via SDS";
+}
+<h2>@ViewData["Title"]</h2>
+
+@if (User.Identity.IsAuthenticated)
+{
+    if (!string.IsNullOrWhiteSpace(ViewBag.creationError))
+    {
+        <div class="row">
+            <div class="col-md-12">
+                <pre>@ViewBag.creationError</pre>
+            </div>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-controller="Sds" asp-action="CreateProfileAsync">
+                <div class="form-group">
+                    <label asp-for="DisplayName"></label>
+                    <input asp-for="DisplayName" class="form-control" />
+                    <span asp-validation-for="DisplayName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ConnectionUrl"></label>
+                    <input asp-for="ConnectionUrl" class="form-control" />
+                    <span asp-validation-for="ConnectionUrl" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="SchoolIds"></label>
+                    <input asp-for="SchoolIds" class="form-control" />
+                    <span asp-validation-for="SchoolIds" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ClientId"></label>
+                    <input asp-for="ClientId" class="form-control" />
+                    <span asp-validation-for="ClientId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ClientSecret"></label>
+                    <input asp-for="ClientSecret" type="password" class="form-control" value="@Model.ClientSecret" />
+                    <span asp-validation-for="ClientSecret" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AzureDomain"></label>
+                    <input asp-for="AzureDomain" class="form-control" />
+                    <span asp-validation-for="AzureDomain" class="text-danger"></span>
+                </div>
+                <button type="submit" class="btn btn-primary">Create</button>
+            </form>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-12">
+            You must sign in with Azure to create SDS Sync Profiles
+        </div>
+    </div>
+}
