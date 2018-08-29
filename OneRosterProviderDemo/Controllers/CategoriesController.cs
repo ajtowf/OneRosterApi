@@ -1,15 +1,6 @@
-﻿/*
- * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
-* See LICENSE in the project root for license information.
-*/
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using OneRosterProviderDemo.Models;
-using Newtonsoft.Json;
 using System.IO;
 using Newtonsoft.Json.Linq;
 
@@ -31,12 +22,12 @@ namespace OneRosterProviderDemo.Controllers
             var categories = categoryQuery.ToList();
 
             serializer = new Serializers.OneRosterSerializer("categories");
-            serializer.writer.WriteStartArray();
+            serializer.Writer.WriteStartArray();
             foreach (var category in categories)
             {
-                category.AsJson(serializer.writer, BaseUrl());
+                category.AsJson(serializer.Writer, BaseUrl());
             }
-            serializer.writer.WriteEndArray();
+            serializer.Writer.WriteEndArray();
 
             return JsonOk(FinishSerialization(), ResponseCount);
         }
@@ -53,7 +44,7 @@ namespace OneRosterProviderDemo.Controllers
             }
 
             serializer = new Serializers.OneRosterSerializer("category");
-            category.AsJson(serializer.writer, BaseUrl());
+            category.AsJson(serializer.Writer, BaseUrl());
             return JsonOk(serializer.Finish());
         }
 

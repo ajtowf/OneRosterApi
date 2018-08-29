@@ -1,14 +1,6 @@
-﻿/*
- * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
-* See LICENSE in the project root for license information.
-*/
-
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using OneRosterProviderDemo.Models;
-using System.Text;
-using System.IO;
-using Newtonsoft.Json;
 using OneRosterProviderDemo.Serializers;
 
 namespace OneRosterProviderDemo.Controllers
@@ -29,12 +21,12 @@ namespace OneRosterProviderDemo.Controllers
             var sessions = sessionsQuery.ToList();
 
             serializer = new OneRosterSerializer("academicSessions");
-            serializer.writer.WriteStartArray();
+            serializer.Writer.WriteStartArray();
             foreach (var session in sessions)
             {
-                session.AsJson(serializer.writer, BaseUrl());
+                session.AsJson(serializer.Writer, BaseUrl());
             }
-            serializer.writer.WriteEndArray();
+            serializer.Writer.WriteEndArray();
 
             return JsonOk(FinishSerialization(), ResponseCount);
         }
@@ -51,7 +43,7 @@ namespace OneRosterProviderDemo.Controllers
             }
 
             serializer = new OneRosterSerializer("academicSession");
-            academicSession.AsJson(serializer.writer, BaseUrl());
+            academicSession.AsJson(serializer.Writer, BaseUrl());
             return JsonOk(serializer.Finish());
         }
     }

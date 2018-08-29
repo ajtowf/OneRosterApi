@@ -1,17 +1,9 @@
-﻿/*
- * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
-* See LICENSE in the project root for license information.
-*/
-
-using CsvHelper;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using OneRosterProviderDemo.Vocabulary;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.IO;
-using System.Text;
 
 namespace OneRosterProviderDemo.Models
 {
@@ -75,30 +67,6 @@ namespace OneRosterProviderDemo.Models
 
             writer.WriteEndObject();
             writer.Flush();
-        }
-
-        public static new void CsvHeader(CsvWriter writer)
-        {
-            BaseModel.CsvHeader(writer);
-
-            writer.WriteField("name");
-            writer.WriteField("type");
-            writer.WriteField("identifier");
-            writer.WriteField("parentSourcedId");
-
-            writer.NextRecord();
-        }
-
-        public new void AsCsvRow(CsvWriter writer, bool bulk = true)
-        {
-            base.AsCsvRow(writer, bulk);
-
-            writer.WriteField(Name);
-            writer.WriteField(Type);
-            writer.WriteField(Identifier);
-            writer.WriteField(ParentOrgId);
-
-            writer.NextRecord();
         }
     }
 }

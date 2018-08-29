@@ -1,10 +1,4 @@
-﻿/*
- * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
-* See LICENSE in the project root for license information.
-*/
-
-using CsvHelper;
-using Microsoft.Extensions.Primitives;
+﻿using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OneRosterProviderDemo.Exceptions;
@@ -106,7 +100,7 @@ namespace OneRosterProviderDemo.Models
 
                 return (u => (Object)getter.Invoke(u, null));
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new InvalidSortFieldException(fieldName);
             }
@@ -278,7 +272,7 @@ namespace OneRosterProviderDemo.Models
                     return (u => (bool)comparator.Invoke(Enum.GetName(fieldType, getter.Invoke(u, null)).ToLower(), new object[] { comparisonValue }));
                 }
             }
-            catch(Exception e)
+            catch(Exception)
             {
                 throw new InvalidFilterFieldException(dataFieldRaw);
             }
@@ -308,30 +302,6 @@ namespace OneRosterProviderDemo.Models
                 return (string)value;
             }
             return defaultValue;
-        }
-
-        public static void CsvHeader(CsvWriter writer)
-        {
-            writer.WriteField("sourcedId");
-
-            writer.WriteField("status");
-            writer.WriteField("dateLastModified");
-        }
-
-        public void AsCsvRow(CsvWriter writer, bool bulk = true)
-        {
-            writer.WriteField(Id);
-
-            if (bulk)
-            {
-                writer.WriteField("");
-                writer.WriteField("");
-            }
-            else
-            {
-                writer.WriteField(Status);
-                writer.WriteField(UpdatedAt.ToString("yyyy-MM-dd"));
-            }
         }
     }
 }

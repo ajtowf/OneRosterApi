@@ -1,23 +1,15 @@
-﻿/*
- * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
-* See LICENSE in the project root for license information.
-*/
-
-using CsvHelper;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using OneRosterProviderDemo.Validators;
 using OneRosterProviderDemo.Vocabulary;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace OneRosterProviderDemo.Models
 {
-    public class Klass : BaseModel
+    public class IMSClass : BaseModel
     {
         internal override string ModelType()
         {
@@ -31,10 +23,10 @@ namespace OneRosterProviderDemo.Models
         [Required]
         public string Title { get; set; }
 
-        public string ClassCode { get; set; }
+        public string IMSClassCode { get; set; }
 
         [Required]
-        public KlassType ClassType { get; set; }
+        public IMSClassType IMSClassType { get; set; }
 
         public string Location { get; set; }
 
@@ -49,7 +41,7 @@ namespace OneRosterProviderDemo.Models
 
         // "terms"
         [NotEmptyCollection]
-        public virtual List<KlassAcademicSession> KlassAcademicSessions { get; set; } 
+        public virtual List<IMSClassAcademicSession> IMSClassAcademicSessions { get; set; } 
 
         public virtual List<Enrollment> Enrollments { get; set; }
 
@@ -57,41 +49,39 @@ namespace OneRosterProviderDemo.Models
         [Grades]
         public string[] Grades
         {
-            get { return _grades == null ? null : JsonConvert.DeserializeObject<string[]>(_grades); }
-            set { _grades = JsonConvert.SerializeObject(value); }
+            get => _grades == null ? null : JsonConvert.DeserializeObject<string[]>(_grades);
+            set => _grades = JsonConvert.SerializeObject(value);
         }
         private string _grades { get; set; }
 
         [NotMapped]
         public string[] Subjects
         {
-            get {
-                return SubjectCodes == null ? null : SubjectCodes.Select(code => Vocabulary.SubjectCodes.SubjectMap[code]).ToArray();
-            }
+            get => SubjectCodes?.Select(code => Vocabulary.SubjectCodes.SubjectMap[code]).ToArray();
         }
 
         [NotMapped]
         [SubjectCodes]
         public string[] SubjectCodes
         {
-            get { return _subjectCodes == null ? null : JsonConvert.DeserializeObject<string[]>(_subjectCodes); }
-            set { _subjectCodes = JsonConvert.SerializeObject(value); }
+            get => _subjectCodes == null ? null : JsonConvert.DeserializeObject<string[]>(_subjectCodes);
+            set => _subjectCodes = JsonConvert.SerializeObject(value);
         }
         private string _subjectCodes { get; set; }
 
         [NotMapped]
         public string[] Periods
         {
-            get { return _periods == null ? null : JsonConvert.DeserializeObject<string[]>(_periods); }
-            set { _periods = JsonConvert.SerializeObject(value); }
+            get => _periods == null ? null : JsonConvert.DeserializeObject<string[]>(_periods);
+            set => _periods = JsonConvert.SerializeObject(value);
         }
         private string _periods { get; set; }
 
         [NotMapped]
         public string[] Resources
         {
-            get { return _resources == null ? null : JsonConvert.DeserializeObject<string[]>(_resources); }
-            set { _resources = JsonConvert.SerializeObject(value); }
+            get => _resources == null ? null : JsonConvert.DeserializeObject<string[]>(_resources);
+            set => _resources = JsonConvert.SerializeObject(value);
         }
         private string _resources { get; set; }
 
@@ -103,14 +93,14 @@ namespace OneRosterProviderDemo.Models
             writer.WritePropertyName("title");
             writer.WriteValue(Title);
 
-            if(!String.IsNullOrEmpty(ClassCode))
+            if(!String.IsNullOrEmpty(IMSClassCode))
             {
                 writer.WritePropertyName("classCode");
-                writer.WriteValue(ClassCode);
+                writer.WriteValue(IMSClassCode);
             }
 
             writer.WritePropertyName("classType");
-            writer.WriteValue(Enum.GetName(typeof(Vocabulary.KlassType), ClassType));
+            writer.WriteValue(Enum.GetName(typeof(IMSClassType), IMSClassType));
 
             if (!String.IsNullOrEmpty(Location))
             {
@@ -166,7 +156,7 @@ namespace OneRosterProviderDemo.Models
 
             writer.WritePropertyName("terms");
             writer.WriteStartArray();
-            KlassAcademicSessions.ForEach(join => join.AcademicSession.AsJsonReference(writer, baseUrl));
+            IMSClassAcademicSessions.ForEach(join => join.AcademicSession.AsJsonReference(writer, baseUrl));
             writer.WriteEndArray();
 
             if (SubjectCodes != null && SubjectCodes.Length > 0)
@@ -193,44 +183,6 @@ namespace OneRosterProviderDemo.Models
 
             writer.WriteEndObject();
             writer.Flush();
-        }
-
-        public static new void CsvHeader(CsvWriter writer)
-        {
-            BaseModel.CsvHeader(writer);
-
-            writer.WriteField("title");
-            writer.WriteField("grades");
-            writer.WriteField("courseSourcedId");
-            writer.WriteField("classCode");
-            writer.WriteField("classType");
-            writer.WriteField("location");
-            writer.WriteField("schoolSourcedId");
-            writer.WriteField("termSourcedIds");
-            writer.WriteField("subjects");
-            writer.WriteField("subjectCodes");
-            writer.WriteField("periods");
-
-            writer.NextRecord();
-        }
-
-        public new void AsCsvRow(CsvWriter writer, bool bulk = true)
-        {
-            base.AsCsvRow(writer, bulk);
-
-            writer.WriteField(Title);
-            writer.WriteField(String.Join(',', Grades));
-            writer.WriteField(CourseId);
-            writer.WriteField(ClassCode);
-            writer.WriteField(ClassType);
-            writer.WriteField(Location);
-            writer.WriteField(SchoolOrgId);
-            writer.WriteField(String.Join(',', KlassAcademicSessions.Select(kas => kas.AcademicSessionId)));
-            writer.WriteField(String.Join(',', Subjects));
-            writer.WriteField(String.Join(',', SubjectCodes));
-            writer.WriteField(String.Join(',', Periods));
-
-            writer.NextRecord();
         }
     }
 }

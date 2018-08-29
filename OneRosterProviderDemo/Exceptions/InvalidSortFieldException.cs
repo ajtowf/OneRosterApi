@@ -1,22 +1,13 @@
-﻿/*
- * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
-* See LICENSE in the project root for license information.
-*/
-
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json;
 
 namespace OneRosterProviderDemo.Exceptions
 {
     public class InvalidSortFieldException : OneRosterException
     {
-        private string field;
-        public InvalidSortFieldException(string _field)
+        private readonly string _field;
+        public InvalidSortFieldException(string field)
         {
-            field = _field;
+            _field = field;
         }
         public override void AsJson(JsonWriter writer, string operation)
         {
@@ -32,7 +23,7 @@ namespace OneRosterProviderDemo.Exceptions
             writer.WriteValue(operation);
 
             writer.WritePropertyName("imsx_description");
-            writer.WriteValue(field);
+            writer.WriteValue(_field);
 
             writer.WritePropertyName("imsx_codeMinor");
             writer.WriteValue("invalid_sort_field");

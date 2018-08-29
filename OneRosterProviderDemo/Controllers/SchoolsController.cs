@@ -1,10 +1,4 @@
-﻿/*
- * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
-* See LICENSE in the project root for license information.
-*/
-
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using OneRosterProviderDemo.Models;
 using Microsoft.EntityFrameworkCore;
 using OneRosterProviderDemo.Serializers;
@@ -15,7 +9,7 @@ namespace OneRosterProviderDemo.Controllers
     [Route("ims/oneroster/v1p1/schools")]
     public class SchoolsController : BaseController
     {
-        public SchoolsController(ApiContext _db) : base(_db)
+        public SchoolsController(ApiContext db) : base(db)
         {
 
         }
@@ -32,12 +26,12 @@ namespace OneRosterProviderDemo.Controllers
             var orgs = orgsQuery.ToList();
 
             serializer = new OneRosterSerializer("orgs");
-            serializer.writer.WriteStartArray();
+            serializer.Writer.WriteStartArray();
             foreach (var org in orgs)
             {
-                org.AsJson(serializer.writer, BaseUrl());
+                org.AsJson(serializer.Writer, BaseUrl());
             }
-            serializer.writer.WriteEndArray();
+            serializer.Writer.WriteEndArray();
 
             return JsonOk(FinishSerialization(), ResponseCount);
         }
@@ -63,7 +57,7 @@ namespace OneRosterProviderDemo.Controllers
             }
 
             serializer = new OneRosterSerializer("org");
-            org.AsJson(serializer.writer, BaseUrl());
+            org.AsJson(serializer.Writer, BaseUrl());
             return JsonOk(serializer.Finish());
         }
 
@@ -82,12 +76,12 @@ namespace OneRosterProviderDemo.Controllers
                 return NotFound();
             }
             serializer = new OneRosterSerializer("courses");
-            serializer.writer.WriteStartArray();
+            serializer.Writer.WriteStartArray();
             foreach (var course in courses)
             {
-                course.AsJson(serializer.writer, BaseUrl());
+                course.AsJson(serializer.Writer, BaseUrl());
             }
-            serializer.writer.WriteEndArray();
+            serializer.Writer.WriteEndArray();
 
             return JsonOk(serializer.Finish(), ResponseCount);
         }
@@ -98,9 +92,9 @@ namespace OneRosterProviderDemo.Controllers
         {
             IQueryable<Enrollment> enrollments = db.Enrollments
                 .Include(e => e.User)
-                .Include(e => e.Klass)
+                .Include(e => e.IMSClass)
                 .Include(e => e.School)
-                .Where(e => e.Klass.SchoolOrgId == id);
+                .Where(e => e.IMSClass.SchoolOrgId == id);
             enrollments = ApplyBinding(enrollments);
 
             if(!enrollments.Any())
@@ -109,12 +103,12 @@ namespace OneRosterProviderDemo.Controllers
             }
 
             serializer = new OneRosterSerializer("enrollments");
-            serializer.writer.WriteStartArray();
+            serializer.Writer.WriteStartArray();
             foreach (var enrollment in enrollments)
             {
-                enrollment.AsJson(serializer.writer, BaseUrl());
+                enrollment.AsJson(serializer.Writer, BaseUrl());
             }
-            serializer.writer.WriteEndArray();
+            serializer.Writer.WriteEndArray();
 
             return JsonOk(serializer.Finish(), ResponseCount);
         }
@@ -123,27 +117,27 @@ namespace OneRosterProviderDemo.Controllers
         [HttpGet("{id}/classes")]
         public IActionResult GetClassesForSchool([FromRoute] string id)
         {
-            var klasses = db.Klasses
-                .Include(k => k.KlassAcademicSessions)
+            var imsClasses = db.IMSClasses
+                .Include(k => k.IMSClassAcademicSessions)
                     .ThenInclude(kas => kas.AcademicSession)
                 .Include(k => k.Course)
                 .Include(k => k.School)
                 .Where(k => k.SchoolOrgId == id);
 
-            klasses = ApplyBinding(klasses);
+            imsClasses = ApplyBinding(imsClasses);
 
-            if (!klasses.Any())
+            if (!imsClasses.Any())
             {
                 return NotFound();
             }
 
             serializer = new OneRosterSerializer("classes");
-            serializer.writer.WriteStartArray();
-            foreach (var klass in klasses)
+            serializer.Writer.WriteStartArray();
+            foreach (var imsClass in imsClasses)
             {
-                klass.AsJson(serializer.writer, BaseUrl());
+                imsClass.AsJson(serializer.Writer, BaseUrl());
             }
-            serializer.writer.WriteEndArray();
+            serializer.Writer.WriteEndArray();
             return JsonOk(serializer.Finish(), ResponseCount);
         }   
 
@@ -164,18 +158,18 @@ namespace OneRosterProviderDemo.Controllers
             }
             
             serializer = new OneRosterSerializer("students");
-            serializer.writer.WriteStartArray();
+            serializer.Writer.WriteStartArray();
             foreach(var student in students)
             {
                 foreach(var org in student.UserOrgs)
                 {
                     if(org.OrgId == id)
                     {
-                        student.AsJson(serializer.writer, BaseUrl());
+                        student.AsJson(serializer.Writer, BaseUrl());
                     }
                 }
             }
-            serializer.writer.WriteEndArray();
+            serializer.Writer.WriteEndArray();
             return JsonOk(serializer.Finish(), ResponseCount);
         }
 
@@ -195,18 +189,18 @@ namespace OneRosterProviderDemo.Controllers
             }
 
             serializer = new OneRosterSerializer("teachers");
-            serializer.writer.WriteStartArray();
+            serializer.Writer.WriteStartArray();
             foreach (var teacher in teachers)
             {
                 foreach(var org in teacher.UserOrgs)
                 {
                     if(org.OrgId == id)
                     {
-                        teacher.AsJson(serializer.writer, BaseUrl());
+                        teacher.AsJson(serializer.Writer, BaseUrl());
                     }
                 }
             }
-            serializer.writer.WriteEndArray();
+            serializer.Writer.WriteEndArray();
             return JsonOk(serializer.Finish(), ResponseCount);
         }
 
@@ -227,12 +221,12 @@ namespace OneRosterProviderDemo.Controllers
             var terms = courses.Select(c => c.SchoolYearAcademicSession);
 
             serializer = new OneRosterSerializer("terms");
-            serializer.writer.WriteStartArray();
+            serializer.Writer.WriteStartArray();
             foreach (var term in terms)
             {
-                term.AsJson(serializer.writer, BaseUrl());
+                term.AsJson(serializer.Writer, BaseUrl());
             }
-            serializer.writer.WriteEndArray();
+            serializer.Writer.WriteEndArray();
             return JsonOk(serializer.Finish(), ResponseCount);
         }
 
@@ -240,28 +234,28 @@ namespace OneRosterProviderDemo.Controllers
         [HttpGet("{schoolId}/classes/{classId}/enrollments")]
         public IActionResult GetEnrollmentsForClassInSchool([FromRoute] string schoolId, string classId)
         {
-            var klass = db.Klasses
+            var imsClass = db.IMSClasses
                 .Where(k => k.SchoolOrgId == schoolId)
                 .Include(k => k.Enrollments)
                     .ThenInclude(e => e.User)
                 .Include(k => k.Enrollments)
-                    .ThenInclude(e => e.Klass)
+                    .ThenInclude(e => e.IMSClass)
                 .Include(k => k.Enrollments)
                     .ThenInclude(e => e.School)
                 .SingleOrDefault(k => k.Id == classId);
 
-            if(klass == null)
+            if(imsClass == null)
             {
                 return NotFound();
             }
 
             serializer = new OneRosterSerializer("enrollments");
-            serializer.writer.WriteStartArray();
-            foreach (var enrollment in klass.Enrollments)
+            serializer.Writer.WriteStartArray();
+            foreach (var enrollment in imsClass.Enrollments)
             {
-                enrollment.AsJson(serializer.writer, BaseUrl());
+                enrollment.AsJson(serializer.Writer, BaseUrl());
             }
-            serializer.writer.WriteEndArray();
+            serializer.Writer.WriteEndArray();
             return JsonOk(serializer.Finish());
         }
 
@@ -269,7 +263,7 @@ namespace OneRosterProviderDemo.Controllers
         [HttpGet("{schoolId}/classes/{classId}/students")]
         public IActionResult GetStudentsForClassInSchool([FromRoute] string schoolId, string classId)
         {
-            var klass = db.Klasses
+            var imsClass = db.IMSClasses
                 .Where(k => k.SchoolOrgId == schoolId)
                 .Include(k => k.Enrollments)
                     .ThenInclude(e => e.User)
@@ -281,22 +275,22 @@ namespace OneRosterProviderDemo.Controllers
                             .ThenInclude(ua => ua.Agent)
                 .SingleOrDefault(k => k.Id == classId);
 
-            if(klass == null)
+            if(imsClass == null)
             {
                 return NotFound();
             }
 
             serializer = new OneRosterSerializer("students");
-            serializer.writer.WriteStartArray();
-            foreach (var enrollment in klass.Enrollments)
+            serializer.Writer.WriteStartArray();
+            foreach (var enrollment in imsClass.Enrollments)
             {
                 var user = enrollment.User;
                 if(user.Role == Vocabulary.RoleType.student)
                 {
-                    user.AsJson(serializer.writer, BaseUrl());
+                    user.AsJson(serializer.Writer, BaseUrl());
                 }
             }
-            serializer.writer.WriteEndArray();
+            serializer.Writer.WriteEndArray();
             return JsonOk(serializer.Finish());
         }
 
@@ -304,7 +298,7 @@ namespace OneRosterProviderDemo.Controllers
         [HttpGet("{schoolId}/classes/{classId}/teachers")]
         public IActionResult GetTeachersForClassInSchool([FromRoute] string schoolId, string classId)
         {
-            var klass = db.Klasses
+            var imsClass = db.IMSClasses
                 .Where(k => k.SchoolOrgId == schoolId)
                 .Include(k => k.Enrollments)
                     .ThenInclude(e => e.User)
@@ -316,22 +310,22 @@ namespace OneRosterProviderDemo.Controllers
                             .ThenInclude(ua => ua.Agent)
                 .SingleOrDefault(k => k.Id == classId);
 
-            if (klass == null)
+            if (imsClass == null)
             {
                 return NotFound();
             }
 
             serializer = new OneRosterSerializer("teachers");
-            serializer.writer.WriteStartArray();
-            foreach (var enrollment in klass.Enrollments)
+            serializer.Writer.WriteStartArray();
+            foreach (var enrollment in imsClass.Enrollments)
             {
                 var user = enrollment.User;
                 if (user.Role == Vocabulary.RoleType.teacher)
                 {
-                    user.AsJson(serializer.writer, BaseUrl());
+                    user.AsJson(serializer.Writer, BaseUrl());
                 }
             }
-            serializer.writer.WriteEndArray();
+            serializer.Writer.WriteEndArray();
             return JsonOk(serializer.Finish());
         }
     }

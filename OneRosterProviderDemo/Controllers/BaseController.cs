@@ -1,9 +1,4 @@
-﻿/*
- * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
-* See LICENSE in the project root for license information.
-*/
-
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using OneRosterProviderDemo.ActionResults;
 using OneRosterProviderDemo.Exceptions;
@@ -68,7 +63,7 @@ namespace OneRosterProviderDemo.Controllers
 
         internal void SerializeExceptions()
         {
-            var writer = serializer.writer;
+            var writer = serializer.Writer;
 
             if (writer.WriteState == WriteState.Object)
             {

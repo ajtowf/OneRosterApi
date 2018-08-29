@@ -1,13 +1,7 @@
-﻿/*
- * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
-* See LICENSE in the project root for license information.
-*/
-
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using Newtonsoft.Json.Linq;
 
 namespace Sds
 {
@@ -82,21 +76,6 @@ namespace Sds
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
 
             return await Client.SendAsync(req);
-        }
-
-        public async Task StartCsvSync(string profileId)
-        {
-            var req = new HttpRequestMessage(HttpMethod.Post, $"https://graph.microsoft.com/testsds/synchronizationProfiles/{profileId}/start");
-            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer");
-            var response = await Client.SendAsync(req);
-            var responseText = await response.Content.ReadAsStringAsync();
-        }
-
-        public async Task<string> GetCsvUploadUrl(string profileId)
-        {
-            var res = await QueryProfileAsync(profileId);
-            var parsed = JObject.Parse(await res.Content.ReadAsStringAsync());
-            return (string)parsed["value"];
         }
     }
 }

@@ -21,12 +21,12 @@ namespace OneRosterProviderDemo.Controllers
             var resources = resourcesQuery.ToList();
 
             serializer = new OneRosterSerializer("resources");
-            serializer.writer.WriteStartArray();
+            serializer.Writer.WriteStartArray();
             foreach (var resource in resources)
             {
-                resource.AsJson(serializer.writer, BaseUrl());
+                resource.AsJson(serializer.Writer, BaseUrl());
             }
-            serializer.writer.WriteEndArray();
+            serializer.Writer.WriteEndArray();
 
             return JsonOk(FinishSerialization(), ResponseCount);
         }
@@ -43,7 +43,7 @@ namespace OneRosterProviderDemo.Controllers
             }
 
             serializer = new OneRosterSerializer("resource");
-            resource.AsJson(serializer.writer, BaseUrl());
+            resource.AsJson(serializer.Writer, BaseUrl());
             return JsonOk(serializer.Finish());
         }
     }

@@ -1,16 +1,9 @@
-﻿/*
- * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
-* See LICENSE in the project root for license information.
-*/
-
-using System;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OneRosterProviderDemo.Models;
 using Newtonsoft.Json.Linq;
 using System.IO;
-using Newtonsoft.Json;
 using OneRosterProviderDemo.Serializers;
 
 namespace OneRosterProviderDemo.Controllers
@@ -28,18 +21,18 @@ namespace OneRosterProviderDemo.Controllers
         {
             IQueryable<LineItem> lineItemsQuery = db.LineItems
                 .Include(li => li.LineItemCategory)
-                .Include(li => li.Klass)
+                .Include(li => li.IMSClass)
                 .Include(li => li.AcademicSession);
             lineItemsQuery = ApplyBinding(lineItemsQuery);
             var lineItems = lineItemsQuery.ToList();
 
             serializer = new Serializers.OneRosterSerializer("lineItems");
-            serializer.writer.WriteStartArray();
+            serializer.Writer.WriteStartArray();
             foreach (var lineItem in lineItems)
             {
-                lineItem.AsJson(serializer.writer, BaseUrl());
+                lineItem.AsJson(serializer.Writer, BaseUrl());
             }
-            serializer.writer.WriteEndArray();
+            serializer.Writer.WriteEndArray();
 
             return JsonOk(FinishSerialization(), ResponseCount);
         }
@@ -50,7 +43,7 @@ namespace OneRosterProviderDemo.Controllers
         {
             var lineItem = db.LineItems
                 .Include(li => li.LineItemCategory)
-                .Include(li => li.Klass)
+                .Include(li => li.IMSClass)
                 .Include(li => li.AcademicSession)
                 .SingleOrDefault(li => li.Id == id);
 
@@ -60,7 +53,7 @@ namespace OneRosterProviderDemo.Controllers
             }
 
             serializer = new Serializers.OneRosterSerializer("lineItem");
-            lineItem.AsJson(serializer.writer, BaseUrl());
+            lineItem.AsJson(serializer.Writer, BaseUrl());
             return JsonOk(serializer.Finish());
         }
 
@@ -117,13 +110,13 @@ namespace OneRosterProviderDemo.Controllers
 
                 db.LineItems
                     .Include(li => li.AcademicSession)
-                    .Include(li => li.Klass)
+                    .Include(li => li.IMSClass)
                     .Include(li => li.LineItemCategory)
                     .Where(li => li.Id == id)
                     .First();
 
                 serializer = new OneRosterSerializer("lineItem");
-                lineItem.AsJson(serializer.writer, BaseUrl());
+                lineItem.AsJson(serializer.Writer, BaseUrl());
                 if (insert)
                 {
                     return JsonWithStatus(serializer.Finish(), null, 201);

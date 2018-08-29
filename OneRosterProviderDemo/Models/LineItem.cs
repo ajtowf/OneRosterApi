@@ -1,13 +1,8 @@
-﻿/*
- * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
-* See LICENSE in the project root for license information.
-*/
-
-using CsvHelper;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 
 namespace OneRosterProviderDemo.Models
 {
@@ -35,8 +30,8 @@ namespace OneRosterProviderDemo.Models
         public DateTime DueDate { get; set; }
 
         [Required]
-        public string KlassId { get; set; }
-        public Klass Klass { get; set; }
+        public string IMSClassId { get; set; }
+        public IMSClass IMSClass { get; set; }
 
         [Required]
         public string LineItemCategoryId { get; set; }
@@ -60,7 +55,7 @@ namespace OneRosterProviderDemo.Models
             writer.WritePropertyName("title");
             writer.WriteValue(Title);
 
-            if (!String.IsNullOrEmpty(Description))
+            if (!string.IsNullOrEmpty(Description))
             {
                 writer.WritePropertyName("description");
                 writer.WriteValue(Description);
@@ -76,16 +71,16 @@ namespace OneRosterProviderDemo.Models
             LineItemCategory.AsJsonReference(writer, baseUrl);
 
             writer.WritePropertyName("class");
-            Klass.AsJsonReference(writer, baseUrl);
+            IMSClass.AsJsonReference(writer, baseUrl);
 
             writer.WritePropertyName("gradingPeriod");
             AcademicSession.AsJsonReference(writer, baseUrl);
 
             writer.WritePropertyName("resultValueMin");
-            writer.WriteValue(ResultValueMin.ToString());
+            writer.WriteValue(ResultValueMin.ToString(CultureInfo.InvariantCulture));
 
             writer.WritePropertyName("resultValueMax");
-            writer.WriteValue(ResultValueMax.ToString());
+            writer.WriteValue(ResultValueMax.ToString(CultureInfo.InvariantCulture));
 
             writer.WriteEndObject();
             writer.Flush();
@@ -102,7 +97,7 @@ namespace OneRosterProviderDemo.Models
                 Description = (string)json["description"];
                 AssignDate = DateTime.Parse((string)json["assignDate"]);
                 DueDate = DateTime.Parse((string)json["dueDate"]);
-                KlassId = (string)json["class"]["sourcedId"];
+                IMSClassId = (string)json["class"]["sourcedId"];
                 LineItemCategoryId = (string)json["category"]["sourcedId"];
                 AcademicSessionId = (string)json["gradingPeriod"]["sourcedId"];
                 ResultValueMin = (float)json["resultValueMin"];
@@ -117,40 +112,6 @@ namespace OneRosterProviderDemo.Models
                 return false;
             }
             return true;
-        }
-
-        public static new void CsvHeader(CsvWriter writer)
-        {
-            BaseModel.CsvHeader(writer);
-
-            writer.WriteField("title");
-            writer.WriteField("description");
-            writer.WriteField("assignDate");
-            writer.WriteField("dueDate");
-            writer.WriteField("classSourcedId");
-            writer.WriteField("categorySourcedId");
-            writer.WriteField("gradingPeriodSourcedId");
-            writer.WriteField("resultValueMin");
-            writer.WriteField("resultValueMax");
-
-            writer.NextRecord();
-        }
-
-        public new void AsCsvRow(CsvWriter writer, bool bulk = true)
-        {
-            base.AsCsvRow(writer, bulk);
-
-            writer.WriteField(Title);
-            writer.WriteField(Description);
-            writer.WriteField(AssignDate.ToString("yyyy-MM-dd"));
-            writer.WriteField(DueDate.ToString("yyyy-MM-dd"));
-            writer.WriteField(KlassId);
-            writer.WriteField(LineItemCategoryId);
-            writer.WriteField(AcademicSessionId);
-            writer.WriteField(ResultValueMin);
-            writer.WriteField(ResultValueMax);
-
-            writer.NextRecord();
         }
     }
 }

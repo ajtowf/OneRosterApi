@@ -1,11 +1,4 @@
-﻿/*
- * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
-* See LICENSE in the project root for license information.
-*/
-
-using Newtonsoft.Json;
-using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using OneRosterProviderDemo.Models;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -32,12 +25,12 @@ namespace OneRosterProviderDemo.Controllers
             var courses = courseQuery.ToList();
 
             serializer = new OneRosterSerializer("courses");
-            serializer.writer.WriteStartArray();
+            serializer.Writer.WriteStartArray();
             foreach (var course in courses)
             {
-                course.AsJson(serializer.writer, BaseUrl());
+                course.AsJson(serializer.Writer, BaseUrl());
             }
-            serializer.writer.WriteEndArray();
+            serializer.Writer.WriteEndArray();
 
             return JsonOk(FinishSerialization(), ResponseCount);
         }
@@ -56,7 +49,7 @@ namespace OneRosterProviderDemo.Controllers
                 return NotFound();
             }
             serializer = new OneRosterSerializer("course");
-            course.AsJson(serializer.writer, BaseUrl());
+            course.AsJson(serializer.Writer, BaseUrl());
             return JsonOk(serializer.Finish());
         }
 
@@ -64,25 +57,25 @@ namespace OneRosterProviderDemo.Controllers
         [HttpGet("{id}/classes")]
         public IActionResult GetClassesForCourse([FromRoute] string id)
         {
-            var klasses = db.Klasses
-                .Include(k => k.KlassAcademicSessions)
+            var imsClasses = db.IMSClasses
+                .Include(k => k.IMSClassAcademicSessions)
                     .ThenInclude(kas => kas.AcademicSession)
                 .Include(k => k.Course)
                 .Include(k => k.School)
                 .Where(k => k.CourseId == id);
 
-            if (!klasses.Any())
+            if (!imsClasses.Any())
             {
                 return NotFound();
             }
 
             serializer = new OneRosterSerializer("resources");
-            serializer.writer.WriteStartArray();
-            foreach (var klass in klasses)
+            serializer.Writer.WriteStartArray();
+            foreach (var imsClass in imsClasses)
             {
-                klass.AsJson(serializer.writer, BaseUrl());
+                imsClass.AsJson(serializer.Writer, BaseUrl());
             }
-            serializer.writer.WriteEndArray();
+            serializer.Writer.WriteEndArray();
             return JsonOk(serializer.Finish());
         }
 
@@ -99,15 +92,15 @@ namespace OneRosterProviderDemo.Controllers
             }
 
             serializer = new OneRosterSerializer("resources");
-            serializer.writer.WriteStartArray();
+            serializer.Writer.WriteStartArray();
             foreach (string resourceId in course.Resources)
             {
                 var resource = db.Resources
                     .FirstOrDefault(r => r.Id == resourceId);
 
-                resource.AsJson(serializer.writer, BaseUrl());
+                resource.AsJson(serializer.Writer, BaseUrl());
             }
-            serializer.writer.WriteEndArray();
+            serializer.Writer.WriteEndArray();
             return JsonOk(serializer.Finish());
         }
     }

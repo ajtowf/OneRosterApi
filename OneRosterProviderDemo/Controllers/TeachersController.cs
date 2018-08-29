@@ -1,13 +1,7 @@
-﻿/*
- * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
-* See LICENSE in the project root for license information.
-*/
-
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using OneRosterProviderDemo.Models;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using OneRosterProviderDemo.Serializers;
 
 namespace OneRosterProviderDemo.Controllers
@@ -32,12 +26,12 @@ namespace OneRosterProviderDemo.Controllers
             var teachers = teacherQuery.ToList();
 
             serializer = new OneRosterSerializer("users");
-            serializer.writer.WriteStartArray();
+            serializer.Writer.WriteStartArray();
             foreach (var teacher in teachers)
             {
-                teacher.AsJson(serializer.writer, BaseUrl());
+                teacher.AsJson(serializer.Writer, BaseUrl());
             }
-            serializer.writer.WriteEndArray();
+            serializer.Writer.WriteEndArray();
 
             return JsonOk(FinishSerialization(), ResponseCount);
         }
@@ -57,7 +51,7 @@ namespace OneRosterProviderDemo.Controllers
             }
 
             serializer = new OneRosterSerializer("user");
-            teacher.AsJson(serializer.writer, BaseUrl());
+            teacher.AsJson(serializer.Writer, BaseUrl());
 
             return JsonOk(serializer.Finish());
         }
@@ -71,22 +65,22 @@ namespace OneRosterProviderDemo.Controllers
                 return NotFound();
             }
 
-            IQueryable<Klass> klassQuery = db.Klasses
+            IQueryable<IMSClass> imsClassesQuery = db.IMSClasses
                 .Include(k => k.Enrollments).ThenInclude(e => e.User)
-                .Include(k => k.Enrollments).ThenInclude(e => e.Klass.Course)
-                .Include(k => k.Enrollments).ThenInclude(e => e.Klass.School)
-                .Include(k => k.Enrollments).ThenInclude(e => e.Klass.KlassAcademicSessions).ThenInclude(kas => kas.AcademicSession)
+                .Include(k => k.Enrollments).ThenInclude(e => e.IMSClass.Course)
+                .Include(k => k.Enrollments).ThenInclude(e => e.IMSClass.School)
+                .Include(k => k.Enrollments).ThenInclude(e => e.IMSClass.IMSClassAcademicSessions).ThenInclude(kas => kas.AcademicSession)
                 .Where(k => k.Enrollments.Where(e => e.UserId == id && e.Role == Vocabulary.RoleType.teacher).Count() > 0);
-            klassQuery = ApplyBinding(klassQuery);
-            var klasses = klassQuery.ToList();
+            imsClassesQuery = ApplyBinding(imsClassesQuery);
+            var imsClasses = imsClassesQuery.ToList();
 
             serializer = new OneRosterSerializer("classes");
-            serializer.writer.WriteStartArray();
-            foreach (var klass in klasses)
+            serializer.Writer.WriteStartArray();
+            foreach (var imsClass in imsClasses)
             {
-                klass.AsJson(serializer.writer, BaseUrl());
+                imsClass.AsJson(serializer.Writer, BaseUrl());
             }
-            serializer.writer.WriteEndArray();
+            serializer.Writer.WriteEndArray();
 
             return JsonOk(FinishSerialization(), ResponseCount);
         }

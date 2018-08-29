@@ -1,23 +1,10 @@
-﻿/*
- * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
-* See LICENSE in the project root for license information.
-*/
-
-using CsvHelper;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using OneRosterProviderDemo.Validators;
 using OneRosterProviderDemo.Vocabulary;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace OneRosterProviderDemo.Models
 {
@@ -39,13 +26,13 @@ namespace OneRosterProviderDemo.Models
         [NotMapped]
         public UserId[] UserIds
         {
-            get { return _userIds == null ? null : JsonConvert.DeserializeObject<UserId[]>(_userIds); }
-            set { _userIds = JsonConvert.SerializeObject(value); }
+            get => _userIds == null ? null : JsonConvert.DeserializeObject<UserId[]>(_userIds);
+            set => _userIds = JsonConvert.SerializeObject(value);
         }
         private string _userIds { get; set; }
 
         [Required]
-        public Boolean EnabledUser { get; set; }
+        public bool EnabledUser { get; set; }
 
         [Required]
         public string GivenName { get; set; }
@@ -71,8 +58,8 @@ namespace OneRosterProviderDemo.Models
         [Grades]
         public string[] Grades
         {
-            get { return _grades == null ? null : JsonConvert.DeserializeObject<string[]>(_grades); }
-            set { _grades = JsonConvert.SerializeObject(value); }
+            get => _grades == null ? null : JsonConvert.DeserializeObject<string[]>(_grades);
+            set => _grades = JsonConvert.SerializeObject(value);
         }
         private string _grades { get; set; }
         public string Password { get; set; }
@@ -170,54 +157,6 @@ namespace OneRosterProviderDemo.Models
 
             writer.WriteEndObject();
             writer.Flush();
-        }
-
-
-
-        public static new void CsvHeader(CsvWriter writer)
-        {
-            BaseModel.CsvHeader(writer);
-            
-            writer.WriteField("enabledUser");
-            writer.WriteField("orgSourcedIds");
-            writer.WriteField("role");
-            writer.WriteField("username");
-            writer.WriteField("userIds");
-            writer.WriteField("givenName");
-            writer.WriteField("familyName");
-            writer.WriteField("middleName");
-            writer.WriteField("identifier");
-            writer.WriteField("email");
-            writer.WriteField("sms");
-            writer.WriteField("phone");
-            writer.WriteField("agentSourcedIds");
-            writer.WriteField("grades");
-            writer.WriteField("password");
-
-            writer.NextRecord();
-        }
-
-        public new void AsCsvRow(CsvWriter writer, bool bulk = true)
-        {
-            base.AsCsvRow(writer, bulk);
-            
-            writer.WriteField(EnabledUser);
-            writer.WriteField(String.Join(',', UserOrgs.Select(uo => uo.OrgId)));
-            writer.WriteField(Role);
-            writer.WriteField(Username);
-            writer.WriteField(UserIds == null ? "" : String.Join(',', UserIds.Select(ui => $"{{{ui.Type}:{ui.Identifier}}}")));
-            writer.WriteField(GivenName);
-            writer.WriteField(FamilyName);
-            writer.WriteField(MiddleName);
-            writer.WriteField(Identifier);
-            writer.WriteField(Email);
-            writer.WriteField(SMS);
-            writer.WriteField(Phone);
-            writer.WriteField(String.Join(',', UserAgents.Select(ua => ua.AgentUserId)));
-            writer.WriteField(String.Join(',', Grades));
-            writer.WriteField(Password);
-
-            writer.NextRecord();
         }
     }
 }

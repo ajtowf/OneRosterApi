@@ -1,14 +1,6 @@
-﻿/*
- * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
-* See LICENSE in the project root for license information.
-*/
-
-using CsvHelper;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+﻿using Newtonsoft.Json;
 using OneRosterProviderDemo.Vocabulary;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -31,8 +23,8 @@ namespace OneRosterProviderDemo.Models
         [NotMapped]
         public RoleType[] Roles
         {
-            get { return _roles == null ? null : JsonConvert.DeserializeObject<RoleType[]>(_roles); }
-            set { _roles = JsonConvert.SerializeObject(value); }
+            get => _roles == null ? null : JsonConvert.DeserializeObject<RoleType[]>(_roles);
+            set => _roles = JsonConvert.SerializeObject(value);
         }
         private string _roles { get; set; }
 
@@ -87,30 +79,6 @@ namespace OneRosterProviderDemo.Models
             }
 
             writer.WriteEndObject();
-        }
-
-        public static new void CsvHeader(CsvWriter writer)
-        {
-            BaseModel.CsvHeader(writer);
-
-            writer.WriteField("title");
-            writer.WriteField("vendorResourceId");
-            writer.WriteField("vendorId");
-            writer.WriteField("applicationId");
-
-            writer.NextRecord();
-        }
-
-        public new void AsCsvRow(CsvWriter writer, bool bulk = true)
-        {
-            base.AsCsvRow(writer, bulk);
-
-            writer.WriteField(Title);
-            writer.WriteField(VendorResourceId);
-            writer.WriteField(VendorId);
-            writer.WriteField(ApplicationId);
-
-            writer.NextRecord();
         }
     }
 }

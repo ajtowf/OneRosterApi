@@ -21,12 +21,12 @@ namespace OneRosterProviderDemo.Controllers
             var demographics = demographicsQuery.ToList();
 
             serializer = new OneRosterSerializer("demographics");
-            serializer.writer.WriteStartArray();
+            serializer.Writer.WriteStartArray();
             foreach (var demographic in demographics)
             {
-                demographic.AsJson(serializer.writer, BaseUrl());
+                demographic.AsJson(serializer.Writer, BaseUrl());
             }
-            serializer.writer.WriteEndArray();
+            serializer.Writer.WriteEndArray();
 
             return JsonOk(FinishSerialization(), ResponseCount);
         }
@@ -44,7 +44,7 @@ namespace OneRosterProviderDemo.Controllers
             }
 
             serializer = new Serializers.OneRosterSerializer("demographic");
-            user.AsJson(serializer.writer, BaseUrl());
+            user.AsJson(serializer.Writer, BaseUrl());
 
             return JsonOk(serializer.Finish());
         }

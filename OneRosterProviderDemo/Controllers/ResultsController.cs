@@ -1,13 +1,7 @@
-﻿/*
- * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
-* See LICENSE in the project root for license information.
-*/
-
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using OneRosterProviderDemo.Models;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using OneRosterProviderDemo.Serializers;
@@ -33,12 +27,12 @@ namespace OneRosterProviderDemo.Controllers
             var results = resultsQuery.ToList();
 
             serializer = new Serializers.OneRosterSerializer("results");
-            serializer.writer.WriteStartArray();
+            serializer.Writer.WriteStartArray();
             foreach (var result in results)
             {
-                result.AsJson(serializer.writer, BaseUrl());
+                result.AsJson(serializer.Writer, BaseUrl());
             }
-            serializer.writer.WriteEndArray();
+            serializer.Writer.WriteEndArray();
 
             return JsonOk(FinishSerialization(), ResponseCount);
         }
@@ -57,8 +51,8 @@ namespace OneRosterProviderDemo.Controllers
                 return NotFound();
             }
 
-            serializer = new Serializers.OneRosterSerializer("result");
-            result.AsJson(serializer.writer, BaseUrl());
+            serializer = new OneRosterSerializer("result");
+            result.AsJson(serializer.Writer, BaseUrl());
             return JsonOk(serializer.Finish());
         }
 
@@ -120,7 +114,7 @@ namespace OneRosterProviderDemo.Controllers
                     .First();
 
                 serializer = new OneRosterSerializer("result");
-                result.AsJson(serializer.writer, BaseUrl());
+                result.AsJson(serializer.Writer, BaseUrl());
 
                 if (insert)
                 {

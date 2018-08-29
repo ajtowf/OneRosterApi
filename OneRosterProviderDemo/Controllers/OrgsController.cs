@@ -1,10 +1,4 @@
-﻿/*
- * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
-* See LICENSE in the project root for license information.
-*/
-
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using OneRosterProviderDemo.Models;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -31,12 +25,12 @@ namespace OneRosterProviderDemo.Controllers
             var orgs = orgsQuery.ToList();
 
             serializer = new OneRosterSerializer("orgs");
-            serializer.writer.WriteStartArray();
+            serializer.Writer.WriteStartArray();
             foreach (var org in orgs)
             {
-                org.AsJson(serializer.writer, BaseUrl());
+                org.AsJson(serializer.Writer, BaseUrl());
             }
-            serializer.writer.WriteEndArray();
+            serializer.Writer.WriteEndArray();
 
             return JsonOk(FinishSerialization(), ResponseCount);
         }
@@ -56,7 +50,7 @@ namespace OneRosterProviderDemo.Controllers
             }
 
             serializer = new OneRosterSerializer("org");
-            org.AsJson(serializer.writer, BaseUrl());
+            org.AsJson(serializer.Writer, BaseUrl());
             return JsonOk(serializer.Finish());
         }
     }

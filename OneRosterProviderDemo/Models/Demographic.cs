@@ -1,10 +1,4 @@
-﻿/*
- * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
-* See LICENSE in the project root for license information.
-*/
-
-using CsvHelper;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using OneRosterProviderDemo.Vocabulary;
 using System;
 
@@ -93,48 +87,6 @@ namespace OneRosterProviderDemo.Models
 
             writer.WriteEndObject();
             writer.Flush();
-        }
-
-        public static new void CsvHeader(CsvWriter writer)
-        {
-            BaseModel.CsvHeader(writer);
-
-            writer.WriteField("birthDate");
-            writer.WriteField("gender");
-            writer.WriteField("americanIndianOrAlaskaNative");
-            writer.WriteField("asian");
-            writer.WriteField("blackOrAfricanAmerican");
-            writer.WriteField("nativeHawaiianOrOtherPacificIslander");
-            writer.WriteField("white");
-            writer.WriteField("demographicRaceTwoOrMoreRaces");
-            writer.WriteField("hispanicOrLatinoEthnicity");
-            writer.WriteField("countryOfBirthCode");
-            writer.WriteField("stateOfBirthAbbreviation");
-            writer.WriteField("cityOfBirth");
-            writer.WriteField("publicSchoolResidenceStatus");
-            
-            writer.NextRecord();
-        }
-
-        public new void AsCsvRow(CsvWriter writer, bool bulk = true)
-        {
-            base.AsCsvRow(writer, bulk);
-
-            writer.WriteField(BirthDate);
-            writer.WriteField(Sex);
-            writer.WriteField(AmericanIndianOrAlaskaNative);
-            writer.WriteField(Asian);
-            writer.WriteField(BlackOrAfricanAmerican);
-            writer.WriteField(NativeHawaiianOrOtherPacificIslander);
-            writer.WriteField(White);
-            writer.WriteField(DemographicRaceTwoOrMoreRaces);
-            writer.WriteField(HispanicOrLatinoEthnicity);
-            writer.WriteField(CountryOfBirthCode);
-            writer.WriteField(StateOfBirthAbbreviation);
-            writer.WriteField(CityOfBirth);
-            writer.WriteField(PublicSchoolResidenceStatus);
-
-            writer.NextRecord();
         }
     }
 }
